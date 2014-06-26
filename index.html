@@ -1,0 +1,20 @@
+<html>
+<head>
+  <script type="text/javascript" src="apriori.js"></script>
+</head>
+<body>
+  <script>
+    var request = new XMLHttpRequest();
+    request.open('GET', '/dataset.csv', true);
+    request.onload = function() {
+      var transactions = Apriori.ArrayUtils.readCSVToArray(request.responseText);
+      var apriori = new Apriori.Algorithm(0.15, 0.6, true);
+      var result = apriori.analyze(transactions);
+      document.write('<pre>' + JSON.stringify(result, null, '  ') + '</pre>');
+    };
+    request.onerror = function() { document.write('dataset.csv not found'); };
+    request.send();
+  </script>
+</body>
+</html>
+
