@@ -257,7 +257,7 @@ module Apriori {
                 itemSets.forEach(function (itemSetB: Array<string>) {
                     if (ArrayUtils.getDiffArray(itemSetA, itemSetB).length > 0) {
                         var mergedArray = [].concat(itemSetA).concat(itemSetB),
-                            joinedSet = ArrayUtils.toStringSet(mergedArray)
+                            joinedSet = ArrayUtils.toStringSet(mergedArray);
                         if (joinedSet.length === length) joinedSetArray.push(joinedSet);
                     }
                 });
@@ -265,7 +265,7 @@ module Apriori {
             return ArrayUtils.toArraySet(joinedSetArray);
         }
         static isSubSetArrayOf(targetArray: Array<string>, superSetArray: Array<string>): boolean {
-            var isSubSetArray = true;
+            var isSubSetArray: boolean = true;
             targetArray.forEach(function (item: string) {
                 if (isSubSetArray && superSetArray.indexOf(item) === -1) isSubSetArray = false;
             });
@@ -285,8 +285,7 @@ module Apriori {
                 // Quoted fields.
                 "(?:\"([^\"]*(?:\"\"[^\"]*)*)\"|" +
                 // Standard fields.
-                "([^\"\\" + delimiter + "\\r\\n]*))"
-                ), 'gi');
+                "([^\"\\" + delimiter + "\\r\\n]*))"), 'gi');
 
             var arrayOfRows: Array<Array<string>> = [[]];
             var matched: RegExpExecArray;
