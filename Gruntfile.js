@@ -1,10 +1,5 @@
 module.exports = function (grunt) {
-    grunt.loadNpmTasks('grunt-typescript');
-    grunt.loadNpmTasks('grunt-contrib-watch');
-    grunt.loadNpmTasks('grunt-contrib-connect');
-    grunt.loadNpmTasks('grunt-open');
-    grunt.loadNpmTasks('grunt-mocha-test');
-    grunt.loadNpmTasks('grunt-contrib-uglify');
+    require('load-grunt-tasks')(grunt);
  
     grunt.initConfig({
         pkg: grunt.file.readJSON('package.json'),
@@ -49,12 +44,21 @@ module.exports = function (grunt) {
                     'apriori.min.js': ['apriori.js']
                 }
             }
+        },
+        umd: {
+            all: {
+                src: 'apriori.js',
+                objectToExport: 'Apriori',
+                amdModuleId: 'apriori',
+                globalAlias: 'Apriori'
+            }
         }
     });
- 
-    grunt.registerTask('test',    ['typescript', 'mochaTest']);
-    grunt.registerTask('build',   ['typescript', 'test', 'uglify']);
-    grunt.registerTask('default', ['typescript', 'connect', 'open', 'watch']);
+
+    grunt.registerTask('toJs',    ['typescript', 'umd']);
+    grunt.registerTask('test',    ['toJs', 'mochaTest']);
+    grunt.registerTask('build',   ['toJs', 'mochaTest', 'uglify']);
+    grunt.registerTask('default', ['toJs', 'connect', 'open', 'watch']);
  
 }
 

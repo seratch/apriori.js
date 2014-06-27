@@ -1,3 +1,15 @@
+(function(root, factory) {
+    if(typeof exports === 'object') {
+        module.exports = factory();
+    }
+    else if(typeof define === 'function' && define.amd) {
+        define('apriori', [], factory);
+    }
+    else {
+        root['Apriori'] = factory();
+    }
+}(this, function() {
+
 'use strict';
 
 var Apriori;
@@ -269,6 +281,7 @@ var Apriori;
     Apriori.ArrayUtils = ArrayUtils;
 })(Apriori || (Apriori = {}));
 
-var module = module || null;
-if (module && module.exports)
-    module.exports = Apriori;
+
+return Apriori;
+
+}));

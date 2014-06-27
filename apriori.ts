@@ -304,7 +304,4 @@ module Apriori {
     }
 }
 
-// for the Node.js runtime
-var module = module || null;
-if (module && module.exports) module.exports = Apriori;
 
