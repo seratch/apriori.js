@@ -4,6 +4,7 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-contrib-connect');
     grunt.loadNpmTasks('grunt-open');
     grunt.loadNpmTasks('grunt-mocha-test');
+    grunt.loadNpmTasks('grunt-contrib-uglify');
  
     grunt.initConfig({
         pkg: grunt.file.readJSON('package.json'),
@@ -41,11 +42,18 @@ module.exports = function (grunt) {
             dev: {
                 path: 'http://localhost:8080/index.html'
             }
+        },
+        uglify: {
+            my_target: {
+                files: {
+                    'apriori.min.js': ['apriori.js']
+                }
+            }
         }
     });
  
-    grunt.registerTask('build',   ['typescript']);
     grunt.registerTask('test',    ['typescript', 'mochaTest']);
+    grunt.registerTask('build',   ['typescript', 'test', 'uglify']);
     grunt.registerTask('default', ['typescript', 'connect', 'open', 'watch']);
  
 }

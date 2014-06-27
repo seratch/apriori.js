@@ -1,7 +1,7 @@
 {
   "name": "apriori",
-  "main": "apriori.js",
-  "version": "1.0.1",
+  "main": "apriori.min.js",
+  "version": "1.0.2",
   "homepage": "https://github.com/seratch/apriori.js",
   "authors": [
     "Kazuhiro Sera <seratch@gmail.com>"

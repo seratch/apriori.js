@@ -1,8 +1,8 @@
 {
   "name": "apriori",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Apriori Algorithm implementation in TypeScript|JavaScript",
-  "main": "apriori.js",
+  "main": "apriori.min.js",
   "repository": {
     "type": "git",
     "url": "git://github.com/seratch/apriori.js.git"
@@ -19,7 +19,7 @@
     }
   ],
   "files": [
-    "apriori.js",
+    "apriori.min.js",
     "LICENSE.txt"
   ],
   "bugs": {
@@ -33,6 +33,7 @@
     "grunt-contrib-connect": "~0.8.0",
     "grunt-open": "~0.2.3",
     "mocha": "~1.20.1",
-    "grunt-mocha-test": "~0.11.0"
+    "grunt-mocha-test": "~0.11.0",
+    "grunt-contrib-uglify": "~0.5.0"
   }
 }

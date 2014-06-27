@@ -21,6 +21,12 @@ http://bower.io/search/?q=apriori
     var Apriori = require('apriori');
     new Apriori.Algorithm(0.15, 0.6, false).showAnalysisResultFromFile('dataset.csv');
 
+### Development
+
+- `grunt` opens an example in your browser
+- `grunt test` runs all the tests.
+- `grunt build` creates aprori.js and apriori.min.js
+
 ### License
 
 the MIT License
