@@ -1,6 +1,6 @@
 {
   "name": "apriori",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Apriori Algorithm implementation in TypeScript|JavaScript",
   "main": "apriori.js",
   "repository": {

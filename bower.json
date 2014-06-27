@@ -1,7 +1,7 @@
 {
   "name": "apriori",
   "main": "apriori.js",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "homepage": "https://github.com/seratch/apriori.js",
   "authors": [
     "Kazuhiro Sera <seratch@gmail.com>"
@@ -13,6 +13,9 @@
     "node_modules",
     "bower_components",
     "test",
-    "tests"
+    "Gruntfile.js",
+    "dataset.csv",
+    "index.html",
+    "README.md"
   ]
 }
