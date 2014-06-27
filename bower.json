@@ -1,11 +1,9 @@
 {
   "name": "apriori",
   "main": "apriori.min.js",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "homepage": "https://github.com/seratch/apriori.js",
-  "authors": [
-    "Kazuhiro Sera <seratch@gmail.com>"
-  ],
+  "authors": [ "Kazuhiro Sera <seratch@gmail.com>" ],
   "description": "Apriori Algorithm implementation in JavaScript",
   "license": "MIT",
   "ignore": [
@@ -13,6 +11,8 @@
     "node_modules",
     "bower_components",
     "test",
+    "phantom_test",
+    "*.json",
     "Gruntfile.js",
     "dataset.csv",
     "index.html",
