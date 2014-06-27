@@ -41,6 +41,9 @@ module.exports = function (grunt) {
                 src: ['test/**/*.js']
             }
         },
+        mocha_phantomjs: {
+            all: ['index.html']
+        },
         open: {
             dev: {
                 path: 'http://localhost:8080/index.html'
@@ -64,7 +67,8 @@ module.exports = function (grunt) {
     });
 
     grunt.registerTask('toJs',    ['typescript', 'umd', 'jshint']);
-    grunt.registerTask('test',    ['toJs', 'mochaTest']);
+    grunt.registerTask('phantomJsTest', ['connect', 'mocha_phantomjs']);
+    grunt.registerTask('test',    ['toJs', 'mochaTest', 'phantomJsTest']);
     grunt.registerTask('build',   ['toJs', 'mochaTest', 'uglify']);
     grunt.registerTask('default', ['toJs', 'connect', 'open', 'watch']);
  

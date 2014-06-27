@@ -1,11 +1,23 @@
 <html>
 <head>
   <script type="text/javascript" src="apriori.js"></script>
+  <link href="node_modules/mocha/mocha.css" media="screen" rel="stylesheet" type="text/css" />
 </head>
 <body>
+  <div id="mocha"></div>
+  <script src="node_modules/mocha/mocha.js" type="text/javascript" charset="utf-8"></script>
+  <script src="node_modules/chai/chai.js" type="text/javascript" charset="utf-8"></script>
   <script>
+  mocha.ui('bdd');
+  expect = chai.expect;
+  </script>
+  <script src="phantom_test/amd_compatibility_spec.js" type="text/javascript" charset="utf-8"></script>
+  <script>
+  if (window.mochaPhantomJS) { 
+    mochaPhantomJS.run(); 
+  } else {
     var request = new XMLHttpRequest();
-    request.open('GET', '/dataset.csv', true);
+    request.open('GET', 'dataset.csv', true);
     request.onload = function() {
       var transactions = Apriori.ArrayUtils.readCSVToArray(request.responseText);
       var apriori = new Apriori.Algorithm(0.15, 0.6, true);
@@ -14,6 +26,7 @@
     };
     request.onerror = function() { document.write('dataset.csv not found'); };
     request.send();
+  }
   </script>
 </body>
 </html>
