@@ -63,12 +63,12 @@ var Apriori;
             if (self.debugMode) {
                 console.log('Before finding item sets: ' + self.getTime(beforeMillis) + ' ms');
             }
-            while (currentLItemSets.length != 0) {
+            var extractItemSet = function (f) {
+                return f.itemSet;
+            };
+            while (currentLItemSets.length !== 0) {
                 frequentItemSets[itemSetSize] = currentLItemSets;
-                var itemSets = currentLItemSets.map(function (c) {
-                    return c.itemSet;
-                });
-                var joinedSets = ArrayUtils.toFixedSizeJoinedSets(itemSets, itemSetSize + 1);
+                var joinedSets = ArrayUtils.toFixedSizeJoinedSets(currentLItemSets.map(extractItemSet), itemSetSize + 1);
                 currentLItemSets = self.findItemSetsMinSupportSatisfied(joinedSets, transactions, self.minSupport, frequencies);
                 itemSetSize += 1;
             }
@@ -94,26 +94,28 @@ var Apriori;
                 console.log('Before calculating association rules: ' + self.getTime(beforeMillis) + ' ms');
             }
             var associationRules = [];
+            var currentItemSet;
+            var saveAssociationRuleIfFound = function (subsetItemSet) {
+                var diffItemSet = ArrayUtils.getDiffArray(currentItemSet, subsetItemSet);
+                if (diffItemSet.length > 0) {
+                    var itemSupport = calculateSupport(currentItemSet, frequencies, transactions), subsetSupport = calculateSupport(subsetItemSet, frequencies, transactions), confidence = itemSupport / subsetSupport;
+
+                    if (!isNaN(confidence) && !isTheRuleAlreadyFound(subsetItemSet) && confidence >= self.minConfidence) {
+                        foundSubSets.push(subsetItemSet);
+                        associationRules.push(new Apriori.AssociationRule(subsetItemSet, diffItemSet, confidence));
+                    }
+                }
+            };
+            var saveAllAssociationRulesIfFound = function (itemSet) {
+                currentItemSet = itemSet;
+                ArrayUtils.toAllSubSets(currentItemSet).forEach(saveAssociationRuleIfFound);
+            };
             for (var k in frequentItemSets) {
-                var itemSets = frequentItemSets[k].map(function (e) {
-                    return e.itemSet;
-                });
+                var itemSets = frequentItemSets[k].map(extractItemSet);
                 if (itemSets.length === 0 || itemSets[0].length <= 1) {
                     continue;
                 }
-                itemSets.forEach(function (itemSet) {
-                    ArrayUtils.toAllSubSets(itemSet).forEach(function (subsetItemSet) {
-                        var diffItemSet = ArrayUtils.getDiffArray(itemSet, subsetItemSet);
-                        if (diffItemSet.length > 0) {
-                            var itemSupport = calculateSupport(itemSet, frequencies, transactions), subsetSupport = calculateSupport(subsetItemSet, frequencies, transactions), confidence = itemSupport / subsetSupport;
-
-                            if (!isNaN(confidence) && !isTheRuleAlreadyFound(subsetItemSet) && confidence >= self.minConfidence) {
-                                foundSubSets.push(subsetItemSet);
-                                associationRules.push(new Apriori.AssociationRule(subsetItemSet, diffItemSet, confidence));
-                            }
-                        }
-                    });
-                });
+                itemSets.forEach(saveAllAssociationRulesIfFound);
             }
             if (self.debugMode) {
                 console.log('After calculating association rules: ' + self.getTime(beforeMillis) + ' ms');
@@ -152,15 +154,17 @@ var Apriori;
                     }
                 });
             });
+            var alreadyAdded = false;
+            var setAsAlreadyAddedIfFound = function (f) {
+                if (!alreadyAdded)
+                    alreadyAdded = f.itemSet === itemSet;
+            };
             for (var strItemSet in localFrequencies) {
                 var itemSet = strItemSet.split(',').sort(), localCount = localFrequencies[itemSet.toString()], support = localCount / transactions.length;
 
                 if (support >= minSupport) {
-                    var alreadyAdded = false;
-                    filteredItemSets.forEach(function (f) {
-                        if (!alreadyAdded)
-                            alreadyAdded = f.itemSet === itemSet;
-                    });
+                    alreadyAdded = false;
+                    filteredItemSets.forEach(setAsAlreadyAddedIfFound);
                     if (!alreadyAdded) {
                         filteredItemSets.push(new FrequentItemSet(itemSet, support));
                     }
@@ -264,7 +268,7 @@ var Apriori;
 
             var arrayOfRows = [[]];
             var matched;
-            while (matched = regexp.exec(inputString)) {
+            while (!!(matched = regexp.exec(inputString))) {
                 var matchedDelimiter = matched[1];
                 if (matchedDelimiter.length && matchedDelimiter !== delimiter) {
                     arrayOfRows.push([]);

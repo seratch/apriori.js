@@ -1,3 +1,4 @@
+(function() {
 'use strict';
 
 var assert = require('assert'),
@@ -27,4 +28,6 @@ describe('Apriori.Algorithm', function () {
 
     });
 });
+
+}());
 

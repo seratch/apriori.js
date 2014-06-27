@@ -78,17 +78,18 @@ module Apriori {
             var frequentItemSets: {[itemSetSize: number]: Array<FrequentItemSet>} = {};
 
             var oneElementItemSets: Array<Array<string>> = self.toOneElementItemSets(transactions);
-            var oneCItemSets: Array<FrequentItemSet> = self.findItemSetsMinSupportSatisfied(oneElementItemSets, transactions, self.minSupport, frequencies);
+            var oneCItemSets: Array<FrequentItemSet> = self.findItemSetsMinSupportSatisfied(
+                oneElementItemSets, transactions, self.minSupport, frequencies);
             var currentLItemSets: Array<FrequentItemSet> = oneCItemSets;
             var itemSetSize: number = 1;
 
             if (self.debugMode) {
                 console.log('Before finding item sets: ' + self.getTime(beforeMillis) + ' ms');
             }
-            while (currentLItemSets.length != 0) {
+            var extractItemSet = function (f: FrequentItemSet) { return f.itemSet };
+            while (currentLItemSets.length !== 0) {
                 frequentItemSets[itemSetSize] = currentLItemSets;
-                var itemSets = currentLItemSets.map(function(c) { return c.itemSet; });
-                var joinedSets = ArrayUtils.toFixedSizeJoinedSets(itemSets, itemSetSize + 1);
+                var joinedSets = ArrayUtils.toFixedSizeJoinedSets(currentLItemSets.map(extractItemSet), itemSetSize + 1);
                 currentLItemSets = self.findItemSetsMinSupportSatisfied(joinedSets, transactions, self.minSupport, frequencies);
                 itemSetSize += 1;
             }
@@ -113,26 +114,30 @@ module Apriori {
                 console.log('Before calculating association rules: ' + self.getTime(beforeMillis) + ' ms');
             }
             var associationRules: Array<AssociationRule> = [];
+            var currentItemSet: Array<string>;
+            var saveAssociationRuleIfFound = function (subsetItemSet: Array<string>) {
+                var diffItemSet: Array<string> = ArrayUtils.getDiffArray(currentItemSet, subsetItemSet);
+                if (diffItemSet.length > 0) {
+                    var itemSupport: number = calculateSupport(currentItemSet, frequencies, transactions),
+                        subsetSupport: number = calculateSupport(subsetItemSet, frequencies, transactions),
+                        confidence: number = itemSupport / subsetSupport;
+
+                    if (!isNaN(confidence) && !isTheRuleAlreadyFound(subsetItemSet) && confidence >= self.minConfidence) {
+                        foundSubSets.push(subsetItemSet);
+                        associationRules.push(new Apriori.AssociationRule(subsetItemSet, diffItemSet, confidence));
+                    }
+                }
+            };
+            var saveAllAssociationRulesIfFound = function (itemSet: Array<string>) {
+                currentItemSet = itemSet;
+                ArrayUtils.toAllSubSets(currentItemSet).forEach(saveAssociationRuleIfFound);
+            };
             for (var k in frequentItemSets) {
-                var itemSets: Array<Array<string>> = frequentItemSets[k].map(function(e) { return e.itemSet; });
+                var itemSets: Array<Array<string>> = frequentItemSets[k].map(extractItemSet);
                 if (itemSets.length === 0 || itemSets[0].length <= 1) {
                     continue;
                 }
-                itemSets.forEach(function (itemSet: Array<string>) {
-                    ArrayUtils.toAllSubSets(itemSet).forEach(function (subsetItemSet: Array<string>) {
-                        var diffItemSet = ArrayUtils.getDiffArray(itemSet, subsetItemSet);
-                        if (diffItemSet.length > 0) {
-                            var itemSupport: number = calculateSupport(itemSet, frequencies, transactions),
-                                subsetSupport: number = calculateSupport(subsetItemSet, frequencies, transactions),
-                                confidence: number = itemSupport / subsetSupport;
-
-                            if (!isNaN(confidence) && !isTheRuleAlreadyFound(subsetItemSet) && confidence >= self.minConfidence) {
-                                foundSubSets.push(subsetItemSet);
-                                associationRules.push(new Apriori.AssociationRule(subsetItemSet, diffItemSet, confidence));
-                            }
-                        }
-                    });
-                })
+                itemSets.forEach(saveAllAssociationRulesIfFound)
             }
             if (self.debugMode) {
                 console.log('After calculating association rules: ' + self.getTime(beforeMillis) + ' ms');
@@ -173,16 +178,18 @@ module Apriori {
                     }
                 });
             });
+            var alreadyAdded = false;
+            var setAsAlreadyAddedIfFound = function (f: FrequentItemSet) {
+                if (!alreadyAdded) alreadyAdded = f.itemSet === itemSet;
+            };
             for (var strItemSet in localFrequencies) {
                 var itemSet: Array<string> = strItemSet.split(',').sort(),
                     localCount: number = localFrequencies[itemSet.toString()],
                     support: number = localCount / transactions.length;
 
                 if (support >= minSupport) {
-                    var alreadyAdded = false;
-                    filteredItemSets.forEach(function (f: FrequentItemSet) {
-                        if (!alreadyAdded) alreadyAdded = f.itemSet === itemSet;
-                    });
+                    alreadyAdded = false;
+                    filteredItemSets.forEach(setAsAlreadyAddedIfFound);
                     if (! alreadyAdded) {
                         filteredItemSets.push(new FrequentItemSet(itemSet, support));
                     }
@@ -289,7 +296,7 @@ module Apriori {
 
             var arrayOfRows: Array<Array<string>> = [[]];
             var matched: RegExpExecArray;
-            while (matched = regexp.exec(inputString)) {
+            while (!!(matched = regexp.exec(inputString))) {
                 var matchedDelimiter: string = matched[1];
                 if (matchedDelimiter.length && matchedDelimiter !== delimiter) {
                     arrayOfRows.push([]);
@@ -303,5 +310,4 @@ module Apriori {
         }
     }
 }
-
 

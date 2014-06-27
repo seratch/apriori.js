@@ -21,6 +21,13 @@ module.exports = function (grunt) {
                 }
             }
         },
+        jshint: {
+            options: {
+                jshintrc: true,
+                reporter: require('jshint-stylish')
+            },
+            all: ['apriori.js', 'test/*.js']
+        },
         watch: {
             files: '**/*.ts',
             tasks: ['typescript']
@@ -55,7 +62,7 @@ module.exports = function (grunt) {
         }
     });
 
-    grunt.registerTask('toJs',    ['typescript', 'umd']);
+    grunt.registerTask('toJs',    ['typescript', 'umd', 'jshint']);
     grunt.registerTask('test',    ['toJs', 'mochaTest']);
     grunt.registerTask('build',   ['toJs', 'mochaTest', 'uglify']);
     grunt.registerTask('default', ['toJs', 'connect', 'open', 'watch']);
