@@ -1,6 +1,6 @@
 {
   "name": "apriori",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Apriori Algorithm implementation in TypeScript|JavaScript",
   "main": "apriori.min.js",
   "repository": {
@@ -18,6 +18,9 @@
       "url": "http://www.opensource.org/licenses/mit-license.php"
     }
   ],
+  "scripts": {
+    "test": "grunt test"
+  },
   "files": [
     "apriori.min.js",
     "LICENSE.txt"
@@ -38,6 +41,8 @@
     "grunt-umd": "~1.7.4",
     "load-grunt-tasks": "~0.6.0",
     "grunt-contrib-jshint": "~0.10.0",
-    "jshint-stylish": "~0.2.0"
+    "jshint-stylish": "~0.2.0",
+    "grunt-mocha-phantomjs": "~0.5.0",
+    "chai": "~1.9.1"
   }
 }
