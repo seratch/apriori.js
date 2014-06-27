@@ -17,7 +17,8 @@ module.exports = function (grunt) {
                 dest: 'apriori.js',
                 options: {
                     module: 'amd',
-                    target: 'es5'
+                    target: 'es5',
+                    sourceMap: true
                 }
             }
         },

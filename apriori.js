@@ -284,6 +284,7 @@ var Apriori;
     })();
     Apriori.ArrayUtils = ArrayUtils;
 })(Apriori || (Apriori = {}));
+//# sourceMappingURL=apriori.js.map
 
 
 return Apriori;
