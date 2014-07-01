@@ -31,7 +31,7 @@ module Apriori {
         frequentItemSets: {[itemSetSize: number]: FrequentItemSet[]};
         associationRules: AssociationRule[];
 
-        constructor(frequentItemSets: {[itemSetSize: number]: FrequentItemSet[]}, associationRules: Array<AssociationRule>) {
+        constructor(frequentItemSets: {[itemSetSize: number]: FrequentItemSet[]}, associationRules: AssociationRule[]) {
             this.frequentItemSets = frequentItemSets;
             this.associationRules = associationRules;
         }
@@ -86,7 +86,7 @@ module Apriori {
             if (self.debugMode) {
                 console.log('Before finding item sets: ' + self.getTime(beforeMillis) + ' ms');
             }
-            var extractItemSet = function (f: FrequentItemSet) { return f.itemSet };
+            var extractItemSet = (f: FrequentItemSet) => { return f.itemSet };
             while (currentLItemSets.length !== 0) {
                 frequentItemSets[itemSetSize] = currentLItemSets;
                 var joinedSets = ArrayUtils.toFixedSizeJoinedSets(currentLItemSets.map(extractItemSet), itemSetSize + 1);
@@ -98,24 +98,26 @@ module Apriori {
             }
 
             // local function which returns the support of an item
-            var calculateSupport: Function = function (
-                itemSet: string[], frequencies: {[strItemSet: string]: number}, transactions: string[][]): number {
+            var calculateSupport: Function = (
+                    itemSet: string[], 
+                    frequencies: {[strItemSet: string]: number}, 
+                    transactions: string[][]): number => {
                 var frequency: number = frequencies[itemSet.toString()];
                 return frequency ? frequency / transactions.length : 0;
             };
             var foundSubSets: string[][] = [];
-            var isTheRuleAlreadyFound: Function = function (itemSet: string[]) {
+            var isTheRuleAlreadyFound: Function = (itemSet: string[]): boolean => {
                 var found: boolean = false;
-                foundSubSets.forEach(function (subset) { if (!found) found = subset.toString() === itemSet.toString(); });
+                foundSubSets.forEach((subset) => { if (!found) found = subset.toString() === itemSet.toString(); });
                 return found;
             };
 
             if (self.debugMode) {
                 console.log('Before calculating association rules: ' + self.getTime(beforeMillis) + ' ms');
             }
-            var associationRules: Array<AssociationRule> = [];
+            var associationRules: AssociationRule[] = [];
             var currentItemSet: string[];
-            var saveAssociationRuleIfFound = function (subsetItemSet: string[]) {
+            var saveAssociationRuleIfFound = (subsetItemSet: string[]): void => {
                 var diffItemSet: string[] = ArrayUtils.getDiffArray(currentItemSet, subsetItemSet);
                 if (diffItemSet.length > 0) {
                     var itemSupport: number = calculateSupport(currentItemSet, frequencies, transactions),
@@ -128,7 +130,7 @@ module Apriori {
                     }
                 }
             };
-            var saveAllAssociationRulesIfFound = function (itemSet: string[]) {
+            var saveAllAssociationRulesIfFound = (itemSet: string[]): void => {
                 currentItemSet = itemSet;
                 ArrayUtils.toAllSubSets(currentItemSet).forEach(saveAssociationRuleIfFound);
             };
@@ -153,8 +155,8 @@ module Apriori {
 
         toOneElementItemSets(transactions): string[][] {
             var nestedArrayOfItem: string[][] = [];
-            transactions.forEach(function (transaction) {
-                transaction.forEach(function (item: string) { nestedArrayOfItem.push(new Array(item)); });
+            transactions.forEach((transaction) => {
+                transaction.forEach((item: string) => { nestedArrayOfItem.push(new Array(item)); });
             });
             return ArrayUtils.toArraySet(nestedArrayOfItem);
         }
@@ -168,8 +170,8 @@ module Apriori {
             var filteredItemSets: FrequentItemSet[] = [],
                 localFrequencies: {[strItemSet: string]: number} = {};
 
-            itemSets.forEach(function (itemSet: string[]) {
-                transactions.forEach(function (transaction: string[]) {
+            itemSets.forEach((itemSet: string[]) => {
+                transactions.forEach((transaction: string[]) => {
                     if (ArrayUtils.isSubSetArrayOf(itemSet, transaction)) {
                         if (!frequencies[itemSet.toString()]) frequencies[itemSet.toString()] = 0;
                         if (!localFrequencies[itemSet.toString()]) localFrequencies[itemSet.toString()] = 0;
@@ -179,7 +181,7 @@ module Apriori {
                 });
             });
             var alreadyAdded = false;
-            var setAsAlreadyAddedIfFound = function (f: FrequentItemSet) {
+            var setAsAlreadyAddedIfFound = (f: FrequentItemSet): void => {
                 if (!alreadyAdded) alreadyAdded = f.itemSet === itemSet;
             };
             for (var strItemSet in localFrequencies) {
@@ -201,7 +203,7 @@ module Apriori {
         // runs on the Node.js runtime
         showAnalysisResultFromFile(filename: string) {
             var self: Apriori.Algorithm = this;
-            require('fs').readFile(filename, 'utf8', function (err, data: string) {
+            require('fs').readFile(filename, 'utf8', (err, data: string) => {
                 if (err) throw err;
                 var transactions: string[][] = ArrayUtils.readCSVToArray(data, ',');
                 var analysisResult: AnalysisResult = self.analyze(transactions);
@@ -218,7 +220,7 @@ module Apriori {
     export class ArrayUtils {
         static toStringSet(array: string[]): string[] {
             var uniqueArray: string[] = [];
-            array.forEach(function (e) {
+            array.forEach((e) => {
                if (uniqueArray.indexOf(e) === -1) uniqueArray.push(e);
             });
             return uniqueArray;
@@ -226,7 +228,7 @@ module Apriori {
         static toArraySet(arrayOfArray: string[][]): string[][] {
             var foundElements: { [strArray: string]: boolean } = {},
                 uniqueArray: string[][] = [];
-            arrayOfArray.forEach(function (array) {
+            arrayOfArray.forEach((array) => {
                 if (!foundElements.hasOwnProperty(array.toString())) {
                     uniqueArray.push(array);
                     foundElements[array.toString()] = true;
@@ -236,7 +238,7 @@ module Apriori {
         }
         static toAllSubSets(array: string[]): string[][] {
             // refs: http://stackoverflow.com/questions/5752002/find-all-possible-subset-combos-in-an-array
-            var op = function (n: number, sourceArray: string[], currentArray: string[], allSubSets: string[][]) {
+            var op = (n: number, sourceArray: string[], currentArray: string[], allSubSets: string[][]) => {
                 if (n === 0) {
                     if (currentArray.length > 0) {
                         allSubSets[allSubSets.length] = ArrayUtils.toStringSet(currentArray);
@@ -260,8 +262,8 @@ module Apriori {
         }
         static toFixedSizeJoinedSets(itemSets: string[][], length: number): string[][] {
             var joinedSetArray: string[][] = [];
-            itemSets.forEach(function (itemSetA: string[]) {
-                itemSets.forEach(function (itemSetB: string[]) {
+            itemSets.forEach((itemSetA: string[]) => {
+                itemSets.forEach((itemSetB: string[]) => {
                     if (ArrayUtils.getDiffArray(itemSetA, itemSetB).length > 0) {
                         var mergedArray = [].concat(itemSetA).concat(itemSetB),
                             joinedSet = ArrayUtils.toStringSet(mergedArray);
@@ -273,14 +275,14 @@ module Apriori {
         }
         static isSubSetArrayOf(targetArray: string[], superSetArray: string[]): boolean {
             var isSubSetArray: boolean = true;
-            targetArray.forEach(function (item: string) {
+            targetArray.forEach((item: string) => {
                 if (isSubSetArray && superSetArray.indexOf(item) === -1) isSubSetArray = false;
             });
             return isSubSetArray;
         }
         static getDiffArray(arrayA: string[], arrayB: string[]): string[] {
             var diffArray: string[] = [];
-            arrayA.forEach(function (e) { if (arrayB.indexOf(e) === -1) diffArray.push(e); });
+            arrayA.forEach((e) => { if (arrayB.indexOf(e) === -1) diffArray.push(e); });
             return diffArray;
         }
         static readCSVToArray(inputString: string, delimiter: string): string[][] {
