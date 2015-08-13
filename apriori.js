@@ -157,7 +157,7 @@ var Apriori;
             var alreadyAdded = false;
             var setAsAlreadyAddedIfFound = function (f) {
                 if (!alreadyAdded)
-                    alreadyAdded = f.itemSet === itemSet;
+                    alreadyAdded = f.itemSet.toString() === itemSet.toString();
             };
             for (var strItemSet in localFrequencies) {
                 var itemSet = strItemSet.split(',').sort(), localCount = localFrequencies[itemSet.toString()], support = localCount / transactions.length;

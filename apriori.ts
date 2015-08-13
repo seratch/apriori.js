@@ -182,7 +182,7 @@ module Apriori {
             });
             var alreadyAdded = false;
             var setAsAlreadyAddedIfFound = (f: FrequentItemSet): void => {
-                if (!alreadyAdded) alreadyAdded = f.itemSet === itemSet;
+                if (!alreadyAdded) alreadyAdded = f.itemSet.toString() === itemSet.toString();
             };
             for (var strItemSet in localFrequencies) {
                 var itemSet: string[] = strItemSet.split(',').sort(),
