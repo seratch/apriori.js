@@ -44,8 +44,8 @@ var Apriori;
 
     var Algorithm = (function () {
         function Algorithm(minSupport, minConfidence, debugMode) {
-            this.minSupport = minSupport || 0.15;
-            this.minConfidence = minConfidence || 0.6;
+            this.minSupport = minSupport ? minSupport === 0 ? 0 : minSupport : 0.15;
+            this.minConfidence = minConfidence ? minConfidence === 0 ? 0 : minConfidence : 0.6;
             this.debugMode = debugMode || false;
         }
         Algorithm.prototype.analyze = function (transactions) {

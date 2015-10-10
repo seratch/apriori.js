@@ -26,6 +26,15 @@ describe('Apriori.Algorithm', function () {
             });
         });
 
+        it('should return 5 association rules with zero confidence / min support', function () {
+            fs.readFile('dataset.csv', 'utf8', function (err, csv) {
+                var transactions = Apriori.ArrayUtils.readCSVToArray(csv);
+                var apriori = new Apriori.Algorithm(0, 0);
+                var result = apriori.analyze(transactions);
+                assert.equal(5, result.associationRules.length);
+            });
+        });
+
     });
 });
 
