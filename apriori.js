@@ -80,16 +80,8 @@ var Apriori;
                 var frequency = frequencies[itemSet.toString()];
                 return frequency ? frequency / transactions.length : 0;
             };
-            var foundSubSets = [];
-            var isTheRuleAlreadyFound = function (itemSet) {
-                var found = false;
-                foundSubSets.forEach(function (subset) {
-                    if (!found)
-                        found = subset.toString() === itemSet.toString();
-                });
-                return found;
-            };
-
+            var isTheRuleAlreadyFound = {}
+			
             if (self.debugMode) {
                 console.log('Before calculating association rules: ' + self.getTime(beforeMillis) + ' ms');
             }
@@ -100,8 +92,8 @@ var Apriori;
                 if (diffItemSet.length > 0) {
                     var itemSupport = calculateSupport(currentItemSet, frequencies, transactions), subsetSupport = calculateSupport(subsetItemSet, frequencies, transactions), confidence = itemSupport / subsetSupport;
 
-                    if (!isNaN(confidence) && !isTheRuleAlreadyFound(subsetItemSet) && confidence >= self.minConfidence) {
-                        foundSubSets.push(subsetItemSet);
+                    if (!isNaN(confidence) && !isTheRuleAlreadyFound[subsetItemSet.toString()] && confidence >= self.minConfidence) {
+                        isTheRuleAlreadyFound[subsetItemSet.toString()] = 1;
                         associationRules.push(new Apriori.AssociationRule(subsetItemSet, diffItemSet, confidence));
                     }
                 }
